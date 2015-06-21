@@ -486,14 +486,14 @@ public class globals {
 		ret += "\tOutput format:     " + outputTxt + "\n";
 
 
-		if( (pepMods_plus != null) && (pepMods_plus.length > 0) ){
+		if( (null != pepMods_plus) && (pepMods_plus.length > 0) ){
 			String x = "";
 			for(int i = 0; i < pepMods_plus.length - 1; i++) { x += pepMods_plus[i] + ", "; }
 			x += pepMods_plus[ (pepMods_plus.length - 1) ];
 			ret += "\tAA mods to keep:   " + x + "\n";
 		}
 
-		if( (pepMods_minus != null) && (pepMods_plus.length > 0) ) {
+		if( (null != pepMods_minus) && (pepMods_minus.length > 0) ) {
 			String x = "";
 			for(int i = 0; i < pepMods_minus.length - 1; i++) { x += pepMods_minus[i] + ", "; }
 			x += pepMods_minus[ (pepMods_minus.length - 1) ];
@@ -765,7 +765,7 @@ public class globals {
 	 * same name as the protXML file.
 	 * If that fails, the function returns false.
 	 * 
-	 * @param pXML protXML
+	 * @param origProtXML_tag protXML_tag
 	 * @return
 	 */
 	private static boolean search_srcDir_for_pepXML(String origProtXML_tag, String protXML_tag) {
@@ -938,20 +938,20 @@ public class globals {
 		int nP = countChar(localregex, '+');
 		int nM = countChar(localregex, '-');
 		
-		pepMods_minus = null;
-		pepMods_plus = null;
+		pepMods_minus = new String[ nM ];
+		pepMods_plus = new String[ nP ];
 		
 		for(int i = 0; i < x.length; i++) {
 			curTxt = x[i].trim();
 			
 			if( curTxt.startsWith("-") ) { // we want to avoid this modification
-				if(pepMods_minus == null) pepMods_minus = new String[ nM ];
+				if(null == pepMods_minus) pepMods_minus = new String[ nM ];
 
 				pepMods_minus[ m ] = curTxt.substring(1).toUpperCase();
 				m++;
 			}
 			else if( curTxt.startsWith("+") ) { // we want to keep this modification
-				if(pepMods_plus == null) pepMods_plus = new String[ nP ];
+				if(null == pepMods_plus) pepMods_plus = new String[ nP ];
 
 				pepMods_plus[ p ] = curTxt.substring(1).toUpperCase();
 				p++;
@@ -969,7 +969,7 @@ public class globals {
 		boolean status = false;
 		int score;
 
-		if( pepMods_plus == null && pepMods_minus == null) status = true;
+		if( (null == pepMods_plus)  && (null == pepMods_minus) ) status = true;
 		else {
 			score = 0;
 			if( (pepMods_plus != null) && (pepMods_plus.length > 0) ) {
