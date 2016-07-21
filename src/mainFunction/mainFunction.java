@@ -7,6 +7,7 @@ package mainFunction;
 
 import abacus.abacus;
 import abacus.abacusUI.abacusUI;
+import abacus.globals;
 import java.io.File;
 import java.io.IOException;
 import org.hsqldb.util.DatabaseManagerSwing;
@@ -35,6 +36,10 @@ public class mainFunction {
 			dbGUI = new DatabaseManagerSwing();
 			dbGUI.main();
 		}
+                else if( (args.length == 1) && (args[0].equals("-t")) ) {
+                    globals.writeTemplate();
+                    System.exit(0);
+                }
 		else if( (args.length == 2) && (args[0].equals("-p")) ) {
 			// run command line version using input file
 			inputFile = args[1];

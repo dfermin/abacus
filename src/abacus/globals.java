@@ -21,6 +21,8 @@ import java.util.regex.Pattern;
 import javax.xml.stream.XMLStreamReader;
 import javax.swing.GroupLayout.*;
 import abacus_textArea.abacus_textArea;
+import java.io.BufferedWriter;
+import java.io.FileWriter;
 import java.text.DecimalFormat;
 
 
@@ -220,6 +222,11 @@ public class globals {
 		
 		if(argv[0].equals("-p")) paramFile = argv[1];
 		
+                if(argv[1].equals("-t")) {
+                    writeTemplate();
+                    System.exit(0);
+                }
+                
 		if(paramFile == null || paramFile.isEmpty() ) {
 			printError(paramFileNull);
 			System.exit(0);
@@ -871,17 +878,8 @@ public class globals {
 			ch = line.charAt(i);
 			if(ch == ' ') break;
 		}
-		// if the protein defline is really, long take name up to
-		// first non-alphanumeric character
-		if(p >= 100) {
-			p = 0;
-			for(int i = 0; i < line.length(); i++) {
-				p++;
-				ch = line.charAt(i);
-				if( !Character.isLetterOrDigit(ch) ) break;
-				if(i >= 100) break;
-			}
-		}
+		// if the protein defline is really long trim it at 100 characters
+		if(p >= 100) p = 100;
 		String tmpId = line.substring(0, p).trim();
 		
 		ret = line.substring(0, p).trim();
@@ -1021,5 +1019,74 @@ public class globals {
 			}
 		}
 	}
+
+        // Function writes a blank input file for the user to fill in.
+        public static void writeTemplate() throws IOException {
+            BufferedWriter out = new BufferedWriter(new FileWriter(new File("Abacus_template.param")));
+            
+            out.append(
+                    "\n#\n# ABACUS parameter file\n" +
+                    "# Generated on: " + globals.formatCurrentTime() + "\n#\n\n"
+            );
+
+            out.append(
+                    "# Name to give the database\n" +
+                    "dbName=ABACUSDB\n\n" +
+
+                    "# Name of protXML file corresponding to merged/combined results\n" +
+                    "combinedFile=\n\n" +
+
+                    "# The directory that contains the pepXML and protXML files\n" +
+                    "srcDir=\n\n" +
+
+                    "# The name of the file where results will be saved to\n" +
+                    "outputFile=\n\n" +
+
+                    "# The minimum PeptideProphet score the best peptide match of a protein must have\n" +
+                    "maxIniProbTH=0.99\n\n" +
+
+                    "# The minimum PeptideProphet score a peptide must have in order to be even considered by Abacus\n" +
+                    "iniProbTH=0.5\n\n" +
+
+                    "# E.P.I: Experimental Peptide-probability Inclusion threshold\n" +
+                    "# If a protein does not contain at least one peptide exceeding this PeptideProphet score, none of the\n" +
+                    "# peptide evidence for this protein will be considered. This is applied on an experiment by experiment case.\n" +
+                    "epiTH=0\n\n" +
+
+                    "# The minimum ProteinProphet score a protein group must have in the COMBINED file\n" +
+                    "minCombinedFilePw=0.5\n\n" +
+
+                    "# The path the the FASTA formatted file used for the original protein search\n" +
+                    "# Relative paths are allowed\n" +
+                    "fasta=\n\n" +
+                            
+                    "# If true, Abacus will write ALL protein IDs belonging to a group in the COMBINED file\n" +
+                    "# Protein IDs starting with ':::' are additional identifiers from the same protein group in\n" +
+                    "# the COMBINED file. The representative protein for the group does not start with ':::'\n" +
+                    "verboseResults=false\n\n" +
+                    
+                    "# The keep the HyperSQL database files that are created after the program is done\n" +
+		    "keepDB=false\n\n" +
+
+                    "# Spectral count data will be reported in NSAF format.\n" +
+                    "# NSAF = _N_ormalized _S_pectral _A_bundance _F_actor\n" +
+                    "# For a detailed explanation of this method refer to this pubmed link:\n" +
+                    "# http://www.ncbi.nlm.nih.gov/pubmed/20166708\n" +
+                    "# Abacus reports NSAF values multiplied by a scaling factor. This is done to\n" +
+                    "# control for numeric underflow (ie: really small numbers). The scaling factor\n" +
+                    "# that is used is called the NSAF_FACTOR and is reported during runtime in\n" +
+                    "# case you would like to rescale your data.\n" +
+                    "asNSAF=false\n\n" + 
+                    
+                    "# If you are using decoy proteins in your searches, specify the first few\n" +
+                    "# characters of the label indicating decoy proteins here\n" +
+		    "decoyTag=\n\n" +
+                    
+                    "# Output format that will be produced by this parameter file\n" +
+		    "output=Default\n\n"
+            );
+            out.close();
+            System.err.print("Template input file create: Abacus_template.param\n\n");
+        }
 	
 }
